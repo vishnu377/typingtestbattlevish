@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TypeBattle - Win Real Money with Your Typing Speed</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+  :root {
+    --bg: #090b10;
+    --bg2: #0d1117;
+    --card: #111620;
+    --card2: #161d2b;
+    --border: #1e2a3a;
+    --accent: #00f5a0;
+    --accent2: #00d9f5;
+    --gold: #ffd700;
+    --danger: #ff4757;
+    --purple: #a855f7;
+    --text: #e8edf5;
+    --muted: #5a6a80;
+    --font-head: 'Orbitron', monospace;
+    --font-body: 'Rajdhani', sans-serif;
+    --font-mono: 'Space Mono', monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 16px; overflow-x: hidden; }
+
+  /* ============ SCROLLBAR ============ */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+  /* ============ SCREEN SYSTEM ============ */
+  .screen { display: none; min-height: 100vh; animation: fadeIn 0.4s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ============ NAV ============ */
+  .navbar { background: rgba(9,11,16,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 12px 0; position: sticky; top: 0; z-index: 999; }
+  .nav-brand { font-family: var(--font-head); font-size: 22px; color: var(--accent); letter-spacing: 2px; }
+  .nav-brand span { color: var(--accent2); }
+  .nav-btn { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; border: none; padding: 8px 20px; border-radius: 6px; font-family: var(--font-body); font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+  .nav-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+  .wallet-badge { background: var(--card2); border: 1px solid var(--accent); color: var(--accent); padding: 7px 16px; border-radius: 6px; font-family: var(--font-mono); font-size: 13px; cursor: pointer; }
+
+  /* ============ HOME SCREEN ============ */
+  .hero { min-height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; }
+  .hero-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at 20% 50%, rgba(0,245,160,0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(0,217,245,0.08) 0%, transparent 60%); }
+  .grid-lines { position: absolute; inset: 0; background-image: linear-gradient(rgba(0,245,160,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,245,160,0.03) 1px, transparent 1px); background-size: 50px 50px; }
+  .hero-title { font-family: var(--font-head); font-size: clamp(36px, 6vw, 80px); font-weight: 900; line-height: 1.05; }
+  .hero-title .line1 { color: var(--text); }
+  .hero-title .line2 { background: linear-gradient(90deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero-sub { font-size: 18px; color: var(--muted); line-height: 1.7; max-width: 480px; }
+  .hero-cta { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; border: none; padding: 16px 40px; border-radius: 8px; font-family: var(--font-head); font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s; letter-spacing: 1px; }
+  .hero-cta:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(0,245,160,0.3); }
+  .hero-cta2 { background: transparent; color: var(--text); border: 1px solid var(--border); padding: 16px 32px; border-radius: 8px; font-family: var(--font-body); font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+  .hero-cta2:hover { border-color: var(--accent); color: var(--accent); }
+  .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: center; }
+  .stat-num { font-family: var(--font-head); font-size: 32px; color: var(--accent); font-weight: 700; }
+  .stat-label { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .floating-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; position: absolute; animation: float 4s ease-in-out infinite; }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+
+  /* ============ SECTION STYLES ============ */
+  .section-title { font-family: var(--font-head); font-size: 28px; color: var(--text); }
+  .section-title span { color: var(--accent); }
+  .badge-live { background: var(--danger); color: #fff; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: 1px; animation: blink 1.5s infinite; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+  /* ============ CONTEST CARDS ============ */
+  .contest-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px; transition: all 0.3s; cursor: pointer; position: relative; overflow: hidden; }
+  .contest-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent), var(--accent2)); transform: scaleX(0); transition: transform 0.3s; }
+  .contest-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,245,160,0.1); }
+  .contest-card:hover::before { transform: scaleX(1); }
+  .entry-fee { font-family: var(--font-head); font-size: 28px; font-weight: 700; }
+  .entry-5 { color: var(--accent); }
+  .entry-10 { color: var(--accent2); }
+  .entry-25 { color: var(--gold); }
+  .entry-50 { color: var(--purple); }
+  .prize-pool { background: var(--card2); border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; margin: 12px 0; }
+  .prize-amount { font-family: var(--font-mono); font-size: 20px; font-weight: 700; color: var(--gold); }
+  .players-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin: 8px 0; }
+  .players-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 3px; transition: width 0.5s; }
+  .join-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-family: var(--font-body); font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.2s; }
+  .join-btn-green { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; }
+  .join-btn-green:hover { transform: scale(1.02); box-shadow: 0 8px 24px rgba(0,245,160,0.3); }
+
+  /* ============ MODAL ============ */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal-box { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 32px; max-width: 480px; width: 90%; transform: scale(0.9); transition: transform 0.3s; }
+  .modal-overlay.open .modal-box { transform: scale(1); }
+  .modal-title { font-family: var(--font-head); font-size: 22px; color: var(--accent); margin-bottom: 20px; }
+
+  /* ============ TYPING ARENA ============ */
+  .arena-bg { background: var(--bg2); min-height: 100vh; }
+  .timer-ring { width: 80px; height: 80px; position: relative; }
+  .timer-ring svg { transform: rotate(-90deg); }
+  .timer-ring circle.bg { fill: none; stroke: var(--border); stroke-width: 6; }
+  .timer-ring circle.fill { fill: none; stroke: var(--accent); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 220; stroke-dashoffset: 0; transition: stroke-dashoffset 1s linear; }
+  .timer-num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-size: 20px; color: var(--accent); font-weight: 700; }
+  .wpm-display { font-family: var(--font-head); font-size: 48px; font-weight: 900; color: var(--accent); line-height: 1; }
+  .wpm-label { color: var(--muted); font-size: 13px; letter-spacing: 2px; }
+  .typing-text-box { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px; font-family: var(--font-mono); font-size: 20px; line-height: 1.8; position: relative; }
+  .char-done { color: var(--accent); }
+  .char-error { color: var(--danger); background: rgba(255,71,87,0.15); border-radius: 2px; }
+  .char-current { background: var(--accent); color: #000; border-radius: 2px; animation: cursor-blink 0.8s infinite; }
+  @keyframes cursor-blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .char-pending { color: var(--muted); }
+  .typing-input { position: absolute; opacity: 0; pointer-events: none; }
+  .arena-input { background: var(--card2); border: 2px solid var(--border); border-radius: 10px; padding: 14px 18px; color: var(--text); font-family: var(--font-mono); font-size: 18px; width: 100%; outline: none; transition: border-color 0.2s; }
+  .arena-input:focus { border-color: var(--accent); }
+  .player-race { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; margin-bottom: 10px; }
+  .race-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; margin-top: 8px; }
+  .race-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+  .race-fill.me { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+  .race-fill.p2 { background: linear-gradient(90deg, var(--purple), #ec4899); }
+  .race-fill.p3 { background: linear-gradient(90deg, var(--gold), #f97316); }
+  .race-fill.p4 { background: linear-gradient(90deg, var(--danger), #ff8c42); }
+
+  /* ============ RESULTS ============ */
+  .result-card { background: var(--card); border-radius: 16px; padding: 28px; text-align: center; }
+  .rank-badge { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-head); font-size: 28px; font-weight: 900; margin: 0 auto 16px; }
+  .rank-1 { background: linear-gradient(135deg, var(--gold), #f97316); color: #000; box-shadow: 0 0 40px rgba(255,215,0,0.4); }
+  .rank-2 { background: linear-gradient(135deg, #9ca3af, #6b7280); color: #000; }
+  .rank-3 { background: linear-gradient(135deg, #d97706, #92400e); color: #fff; }
+  .rank-other { background: var(--card2); border: 1px solid var(--border); color: var(--muted); }
+  .prize-won { font-family: var(--font-head); font-size: 48px; color: var(--gold); font-weight: 900; }
+  .confetti { position: fixed; inset: 0; pointer-events: none; z-index: 999; }
+
+  /* ============ LEADERBOARD ============ */
+  .lb-row { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; margin-bottom: 8px; display: flex; align-items: center; gap: 16px; transition: all 0.2s; }
+  .lb-row:hover { border-color: var(--accent); }
+  .lb-rank { font-family: var(--font-head); font-size: 18px; font-weight: 700; width: 32px; text-align: center; }
+  .lb-rank.gold { color: var(--gold); }
+  .lb-rank.silver { color: #9ca3af; }
+  .lb-rank.bronze { color: #d97706; }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; }
+  .lb-wpm { font-family: var(--font-mono); font-size: 16px; color: var(--accent); font-weight: 700; }
+
+  /* ============ WALLET ============ */
+  .wallet-card { background: linear-gradient(135deg, #0d1f2d, #0a1628); border: 1px solid var(--border); border-radius: 20px; padding: 28px; position: relative; overflow: hidden; }
+  .wallet-card::before { content: ''; position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(0,245,160,0.1) 0%, transparent 70%); }
+  .wallet-balance { font-family: var(--font-head); font-size: 52px; font-weight: 900; color: var(--accent); }
+  .txn-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .txn-amount.credit { color: var(--accent); }
+  .txn-amount.debit { color: var(--danger); }
+
+  /* ============ AUTH SCREEN ============ */
+  .auth-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 40px; max-width: 420px; width: 90%; margin: auto; }
+  .auth-input { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; color: var(--text); width: 100%; outline: none; font-family: var(--font-body); font-size: 15px; transition: border-color 0.2s; }
+  .auth-input:focus { border-color: var(--accent); }
+  .auth-input::placeholder { color: var(--muted); }
+  .auth-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border: none; border-radius: 8px; color: #000; font-family: var(--font-head); font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s; letter-spacing: 1px; }
+  .auth-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,245,160,0.3); }
+  .divider { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 13px; margin: 20px 0; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .social-btn { background: var(--card2); border: 1px solid var(--border); border-radius: 8px; padding: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; transition: all 0.2s; font-weight: 600; }
+  .social-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ============ COUNTDOWN ============ */
+  .countdown-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+  .countdown-screen.active { opacity: 1; pointer-events: all; }
+  .countdown-num { font-family: var(--font-head); font-size: 120px; font-weight: 900; color: var(--accent); text-shadow: 0 0 60px rgba(0,245,160,0.5); animation: countPulse 1s ease; }
+  @keyframes countPulse { 0% { transform: scale(1.5); opacity: 0; } 50% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.8); opacity: 0.5; } }
+
+  /* ============ TABS ============ */
+  .tab-nav { display: flex; gap: 4px; background: var(--card); border-radius: 10px; padding: 4px; }
+  .tab-btn { flex: 1; padding: 10px; text-align: center; border: none; background: transparent; color: var(--muted); font-family: var(--font-body); font-weight: 600; font-size: 14px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+  .tab-btn.active { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #000; }
+
+  /* ============ TOAST ============ */
+  .toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+  .toast { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; gap: 12px; min-width: 280px; animation: slideInRight 0.3s ease; }
+  .toast.success { border-color: var(--accent); }
+  .toast.error { border-color: var(--danger); }
+  @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  /* ============ UTILITY ============ */
+  .text-accent { color: var(--accent); }
+  .text-gold { color: var(--gold); }
+  .text-muted-c { color: var(--muted); }
+  .text-mono { font-family: var(--font-mono); }
+  .text-head { font-family: var(--font-head); }
+  .bg-card { background: var(--card); }
+  .border-tb { border: 1px solid var(--border); }
+  .br-10 { border-radius: 10px; }
+  .br-14 { border-radius: 14px; }
+  .bottom-nav { display: none; }
+  @media(max-width:768px){
+    .bottom-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid var(--border); padding: 10px 0 6px; z-index: 900; justify-content: space-around; }
+    .bottom-nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--muted); font-size: 10px; cursor: pointer; transition: color 0.2s; padding: 0 16px; }
+    .bottom-nav-item.active { color: var(--accent); }
+    .bottom-nav-item i { font-size: 20px; }
+  }
+  .profile-pic { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #000; font-size: 14px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<!-- ============ NAVBAR ============ -->
+<nav class="navbar" id="mainNav">
+  <div class="container d-flex align-items-center justify-content-between">
+    <div class="nav-brand" onclick="showScreen('home')" style="cursor:pointer">TYPE<span>BATTLE</span></div>
+    <div class="d-flex align-items-center gap-3">
+      <div class="wallet-badge d-none d-md-flex" onclick="showScreen('wallet')">
+        <i class="fas fa-wallet me-2"></i>₹248.50
+      </div>
+      <div class="profile-pic" onclick="showScreen('profile')">RK</div>
+      <button class="nav-btn d-none d-md-block" onclick="showScreen('auth')">Login / Sign Up</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ BOTTOM NAV (Mobile) ============ -->
+<div class="bottom-nav">
+  <div class="bottom-nav-item active" onclick="showScreen('home')"><i class="fas fa-home"></i>Home</div>
+  <div class="bottom-nav-item" onclick="showScreen('lobby')"><i class="fas fa-gamepad"></i>Contests</div>
+  <div class="bottom-nav-item" onclick="showScreen('leaderboard')"><i class="fas fa-trophy"></i>Leaders</div>
+  <div class="bottom-nav-item" onclick="showScreen('wallet')"><i class="fas fa-wallet"></i>Wallet</div>
+  <div class="bottom-nav-item" onclick="showScreen('profile')"><i class="fas fa-user"></i>Profile</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 1: HOME -->
+<!-- ============================================================ -->
+<div class="screen active" id="screen-home">
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="grid-lines"></div>
+    <div class="container py-5">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="badge-live">● LIVE</span>
+            <span style="color:var(--muted);font-size:13px;">1,247 players competing now</span>
+          </div>
+          <div class="hero-title mb-4">
+            <div class="line1">Type Fast.</div>
+            <div class="line1">Win Big.</div>
+            <div class="line2">Real Money.</div>
+          </div>
+          <p class="hero-sub mb-4">Join live typing contests, compete with real players across India. The faster you type, the more you earn. It's skill, not luck.</p>
+          <div class="d-flex gap-3 flex-wrap">
+            <button class="hero-cta" onclick="showScreen('lobby')"><i class="fas fa-bolt me-2"></i>Play Now</button>
+            <button class="hero-cta2" onclick="showScreen('how')"><i class="fas fa-play me-2"></i>How It Works</button>
+          </div>
+          <div class="row g-3 mt-4">
+            <div class="col-4"><div class="stat-card"><div class="stat-num">₹50K+</div><div class="stat-label">Paid Today</div></div></div>
+            <div class="col-4"><div class="stat-card"><div class="stat-num">12K+</div><div class="stat-label">Players</div></div></div>
+            <div class="col-4"><div class="stat-card"><div class="stat-num">98%</div><div class="stat-label">Payout Rate</div></div></div>
+          </div>
+        </div>
+        <div class="col-lg-6 d-none d-lg-block position-relative" style="height:420px">
+          <div class="floating-card" style="top:0;right:80px;width:220px;animation-delay:0s">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <div class="avatar" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;width:32px;height:32px;font-size:13px">RK</div>
+              <span style="font-size:13px;font-weight:600">Rahul K.</span>
+            </div>
+            <div style="font-family:var(--font-head);font-size:28px;color:var(--accent)">142 WPM</div>
+            <div style="color:var(--muted);font-size:12px">98% accuracy</div>
+            <div style="color:var(--gold);font-weight:700;font-size:14px;margin-top:6px">+₹250 Won!</div>
+          </div>
+          <div class="floating-card" style="top:140px;right:0;width:200px;animation-delay:1s">
+            <div style="color:var(--muted);font-size:12px;margin-bottom:6px">Contest Ending in</div>
+            <div style="font-family:var(--font-head);color:var(--danger);font-size:22px">00:47</div>
+            <div style="font-size:12px;color:var(--muted)">8/10 players joined</div>
+          </div>
+          <div class="floating-card" style="top:280px;right:100px;width:240px;animation-delay:2s">
+            <div style="color:var(--muted);font-size:12px;margin-bottom:8px">PRIZE POOL</div>
+            <div style="font-family:var(--font-head);font-size:24px;color:var(--gold)">₹450</div>
+            <div class="players-bar mt-2"><div class="players-fill" style="width:80%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <section class="py-5" style="background:var(--bg2)" id="how">
+    <div class="container">
+      <div class="text-center mb-5">
+        <div class="section-title">How It <span>Works</span></div>
+        <p style="color:var(--muted)">Simple 4 steps to win real money</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-3 col-6 text-center">
+          <div style="width:60px;height:60px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px">💳</div>
+          <div style="font-family:var(--font-head);font-size:16px;margin-bottom:8px">1. Add Money</div>
+          <div style="color:var(--muted);font-size:14px">Add ₹10+ to your wallet via UPI, Card or Net Banking</div>
+        </div>
+        <div class="col-md-3 col-6 text-center">
+          <div style="width:60px;height:60px;background:linear-gradient(135deg,var(--accent2),var(--purple));border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px">🎮</div>
+          <div style="font-family:var(--font-head);font-size:16px;margin-bottom:8px">2. Join Contest</div>
+          <div style="color:var(--muted);font-size:14px">Pick a contest (₹5 to ₹100) and join with other players</div>
+        </div>
+        <div class="col-md-3 col-6 text-center">
+          <div style="width:60px;height:60px;background:linear-gradient(135deg,var(--purple),var(--danger));border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px">⌨️</div>
+          <div style="font-family:var(--font-head);font-size:16px;margin-bottom:8px">3. Type Fast</div>
+          <div style="color:var(--muted);font-size:14px">Type the given text as fast & accurate as possible</div>
+        </div>
+        <div class="col-md-3 col-6 text-center">
+          <div style="width:60px;height:60px;background:linear-gradient(135deg,var(--gold),#f97316);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px">🏆</div>
+          <div style="font-family:var(--font-head);font-size:16px;margin-bottom:8px">4. Win & Withdraw</div>
+          <div style="color:var(--muted);font-size:14px">Top scorers win prize money, withdraw instantly to UPI</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED CONTESTS -->
+  <section class="py-5">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="section-title">Live <span>Contests</span></div>
+        <button style="background:transparent;border:1px solid var(--border);color:var(--text);padding:8px 18px;border-radius:8px;cursor:pointer;font-family:var(--font-body)" onclick="showScreen('lobby')">View All →</button>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="contest-card" onclick="openJoinModal(5,90,'Rookie')">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div><span class="entry-fee entry-5">₹5</span><div style="color:var(--muted);font-size:12px">Entry Fee</div></div>
+              <span class="badge-live">● LIVE</span>
+            </div>
+            <div class="prize-pool"><span style="color:var(--muted);font-size:13px">Prize Pool</span><span class="prize-amount">₹90</span></div>
+            <div class="d-flex justify-content-between align-items-center mb-1" style="font-size:13px">
+              <span style="color:var(--muted)">Players</span><span>18/20</span>
+            </div>
+            <div class="players-bar"><div class="players-fill" style="width:90%"></div></div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Top 3 win prizes • 60s contest</div>
+            <button class="join-btn join-btn-green">Join for ₹5</button>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="contest-card" onclick="openJoinModal(10,180,'Pro')">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div><span class="entry-fee entry-10">₹10</span><div style="color:var(--muted);font-size:12px">Entry Fee</div></div>
+              <span class="badge-live">● LIVE</span>
+            </div>
+            <div class="prize-pool"><span style="color:var(--muted);font-size:13px">Prize Pool</span><span class="prize-amount">₹180</span></div>
+            <div class="d-flex justify-content-between align-items-center mb-1" style="font-size:13px">
+              <span style="color:var(--muted)">Players</span><span>14/20</span>
+            </div>
+            <div class="players-bar"><div class="players-fill" style="width:70%"></div></div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Top 5 win prizes • 90s contest</div>
+            <button class="join-btn join-btn-green">Join for ₹10</button>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="contest-card" onclick="openJoinModal(25,450,'Champion')">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div><span class="entry-fee entry-25">₹25</span><div style="color:var(--muted);font-size:12px">Entry Fee</div></div>
+              <div style="background:var(--gold);color:#000;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700">HOT🔥</div>
+            </div>
+            <div class="prize-pool"><span style="color:var(--muted);font-size:13px">Prize Pool</span><span class="prize-amount">₹450</span></div>
+            <div class="d-flex justify-content-between align-items-center mb-1" style="font-size:13px">
+              <span style="color:var(--muted)">Players</span><span>8/20</span>
+            </div>
+            <div class="players-bar"><div class="players-fill" style="width:40%"></div></div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Top 8 win prizes • 120s contest</div>
+            <button class="join-btn join-btn-green">Join for ₹25</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <div style="height:60px"></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 2: LOBBY -->
+<!-- ============================================================ -->
+<div class="screen" id="screen-lobby">
+  <div class="container py-4">
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <button onclick="showScreen('home')" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;cursor:pointer"><i class="fas fa-arrow-left"></i></button>
+      <div class="section-title">Contest <span>Lobby</span></div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="tab-nav mb-4">
+      <button class="tab-btn active" onclick="setTab(this,'all')">All</button>
+      <button class="tab-btn" onclick="setTab(this,'5')">₹5 Entry</button>
+      <button class="tab-btn" onclick="setTab(this,'10')">₹10 Entry</button>
+      <button class="tab-btn" onclick="setTab(this,'25')">₹25 Entry</button>
+      <button class="tab-btn" onclick="setTab(this,'50')">₹50+ Entry</button>
+    </div>
+
+    <div class="row g-3">
+      <!-- Cards -->
+      <div class="col-md-4 col-sm-6">
+        <div class="contest-card" onclick="openJoinModal(5,90,'Rookie')">
+          <div class="d-flex justify-content-between mb-2">
+            <div><div class="entry-fee entry-5">₹5</div><div style="color:var(--muted);font-size:12px">Entry Fee</div></div>
+            <span class="badge-live">● LIVE</span>
+          </div>
+          <div class="d-flex justify-content-between mb-1" style="font-size:13px;color:var(--muted)"><span>Contest Type</span><span style="color:var(--text)">Rookie</span></div>
+          <div class="d-flex justify-content-between mb-1" style="font-size:13px;color:var(--muted)"><span>Duration</span><span style="color:var(--text)">60 seconds</span></div>
+          <div class="d-flex justify-content-between mb-1" style="font-size:13px;color:var(--muted)"><span>Winners</span><span style="color:var(--text)">Top 3 of 20</span></div>
+          <div class="prize-pool mt-2"><span style="color:var(--muted);font-size:13px">🏆 Prize Pool</span><span class="prize-amount">₹90</span></div>
+          <div class="players-bar"><div class="players-fill" style="width:90%"></div></div>
+          <div style="font-size:12px;color:var(--muted);text-align:right;margin-bottom:10px">18/20 joined</div>
+          <button class="join-btn join-btn-green">Join Now — ₹5</button>
+        </div>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <div class="contest-card" onclick="openJoinModal(10,180,'Pro')">
+          <div class="d-flex justify-content-between mb-2">
+            <div><div class="entry-fee entry-10">₹10</div><div style="color:var(--muted);font-size:12px">Entry Fee</div></div>
+            <span class="badge-live">● LIVE</span>
+          </div>
+          <div class="d-flex justify-content-between mb-1" style="font-size:13px;color:var(--muted)"><span>Contest Type</span><span style="color:var(--text)">Pro</span></div>
+          <div class="d-flex justify-content-between mb-1" style="font-size:13px;color:var(--muted)"><span>Duration</span><span style="color:var(--text)">90 seconds</span></div>
+          <div class="d-flex justify-content-between mb-1" style="font-size:13px;color:var(--muted)"><span>Winners</span><span style="color:var(--text)">Top 5 of 20</span></div>
+          <div class="prize-pool mt-2"><span style="color:var(--muted);font-size:13px">🏆 Prize Pool</span><span class="prize-amount">₹180</span></div>
+          <div class="players-bar"><div class="players-fill" style="width:70%"></div></div>
+          <div style="font-size:12px;color:var(--muted);text-align:right;margin-bottom:10px">14/20 joined</div>
+          <button class="join-btn join-btn-green">Join Now — ₹10</button>
+        </div>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <div class="contest-card" onclick="openJoinModal(25,450,'Champion')">
+          <div class="d-flex justify-content-between mb-2">
+            <div><div class="entry-fee entry-25">₹25</div><div style="color:var(--muted);font-size:12px">Entry Fee</div></div>
+            <div style="background:var(--gold);color:#000;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:700">🔥 HOT</div>
+          </div>
+          <div class="d-flex justify-content-between mb-1" style="font-size:13px;color:var(--muted)"><span>Contest Type</span><span style="color:var(--text)">Champion</span></div>
+          <div class="d-flex justify-content-between mb-1" style="font-size:13px;color:var(--muted)"><span>Duration</span><span style="color:var(--text)">120 seconds</span></div>
+          <div class="d-flex justify-content-between mb-1" style="font-size:13px;color:var(--muted)"><span>Winners</span><span style="color:var(--text)">Top 8 of 20</span></div>
+          <div class="prize-pool mt-2"><span style="color:var(--muted);font-size:13px">🏆 Prize Pool</span><span class="prize-amount">₹450</span></div>
+          <div class="players-bar"><div class="players-fill" style="width:40%"></div></div>
+          <div style="font-size:12px;color:var(--muted);text-align:right;margin-bottom:10px">8/20 joined</div>
+          <button class="join-btn join-btn-green">Join Now — ₹25</button>
+        </div>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <div class="contest-card" onclick="openJoinModal(50,900,'Elite')">
+          <div class="d-flex justify-content-between mb-2">
+            <div><div class="entry-fee entry-50">₹50</div><div style="color:var(--muted);font-size:12px">Entry Fee</div></div>
+            <div style="background:var(--purple);color:#fff;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:700">ELITE</div>
+          </div>
+          <div class="d-flex justify-content-between mb-1" style="font-size:13px;color:var(--muted)"><span>Contest Type</span><span style="color:var(--text)">Elite</span></div>
+          <div class="d-flex justify-content-between mb-1" style="font-size:13px;color:var(--muted)"><span>Duration</span><span style="color:var(--text)">120 seconds</span></div>
+          <div class="d-flex justify-content-between mb-1" style="font-size:13px;color:var(--muted)"><span>Winners</span><span style="color:var(--text)">Top 5 of 10</span></div>
+          <div class="prize-pool mt-2"><span style="color:var(--muted);font-size:13px">🏆 Prize Pool</span><span class="prize-amount">₹900</span></div>
+          <div class="players-bar"><div class="players-fill" style="width:60%"></div></div>
+          <div style="font-size:12px;color:var(--muted);text-align:right;margin-bottom:10px">6/10 joined</div>
+          <button class="join-btn join-btn-green">Join Now — ₹50</button>
+        </div>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <div class="contest-card" onclick="openJoinModal(100,1800,'Master')">
+          <div class="d-flex justify-content-between mb-2">
+            <div><div class="entry-fee entry-50">₹100</div><div style="color:var(--muted);font-size:12px">Entry Fee</div></div>
+            <div style="background:linear-gradient(135deg,var(--gold),#f97316);color:#000;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:700">MASTER</div>
+          </div>
+          <div class="d-flex justify-content-between mb-1" style="font-size:13px;color:var(--muted)"><span>Duration</span><span style="color:var(--text)">120 seconds</span></div>
+          <div class="d-flex justify-content-between mb-1" style="font-size:13px;color:var(--muted)"><span>Winners</span><span style="color:var(--text)">Top 3 of 10</span></div>
+          <div class="prize-pool mt-2"><span style="color:var(--muted);font-size:13px">🏆 Prize Pool</span><span class="prize-amount">₹1,800</span></div>
+          <div class="players-bar"><div class="players-fill" style="width:20%"></div></div>
+          <div style="font-size:12px;color:var(--muted);text-align:right;margin-bottom:10px">2/10 joined</div>
+          <button class="join-btn join-btn-green">Join Now — ₹100</button>
+        </div>
+      </div>
+      <div class="col-md-4 col-sm-6">
+        <div class="contest-card" style="border-style:dashed;cursor:default;display:flex;align-items:center;justify-content:center;min-height:280px;flex-direction:column;gap:12px">
+          <div style="font-size:40px">⏳</div>
+          <div style="font-family:var(--font-head);font-size:16px;color:var(--muted)">More Contests</div>
+          <div style="color:var(--muted);font-size:13px;text-align:center">New contests start every 5 minutes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="height:80px"></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 3: TYPING ARENA -->
+<!-- ============================================================ -->
+<div class="screen arena-bg" id="screen-arena">
+  <div class="container py-4">
+    <!-- Top Bar -->
+    <div class="row g-3 mb-4">
+      <div class="col-4 text-center">
+        <div class="wpm-display" id="wpmCount">0</div>
+        <div class="wpm-label">WPM</div>
+      </div>
+      <div class="col-4 text-center d-flex justify-content-center">
+        <div class="timer-ring">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle class="bg" cx="40" cy="40" r="35"/>
+            <circle class="fill" id="timerCircle" cx="40" cy="40" r="35"/>
+          </svg>
+          <div class="timer-num" id="timerNum">60</div>
+        </div>
+      </div>
+      <div class="col-4 text-center">
+        <div class="wpm-display" id="accCount">100%</div>
+        <div class="wpm-label">ACCURACY</div>
+      </div>
+    </div>
+
+    <!-- Race Track -->
+    <div class="mb-4">
+      <div style="font-family:var(--font-head);font-size:13px;color:var(--muted);letter-spacing:2px;margin-bottom:10px">LIVE RACE</div>
+      <div class="player-race">
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <div class="avatar" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;width:32px;height:32px;font-size:13px">ME</div>
+            <span style="font-weight:700;font-size:14px">You</span>
+            <span style="background:var(--accent);color:#000;padding:1px 8px;border-radius:10px;font-size:11px;font-weight:700">YOU</span>
+          </div>
+          <span style="font-family:var(--font-mono);color:var(--accent);font-size:14px" id="myWpm">0 WPM</span>
+        </div>
+        <div class="race-bar"><div class="race-fill me" id="myBar" style="width:0%"></div></div>
+      </div>
+      <div class="player-race">
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <div class="avatar" style="background:linear-gradient(135deg,var(--purple),#ec4899);color:#fff;width:32px;height:32px;font-size:13px">AK</div>
+            <span style="font-weight:700;font-size:14px">Ankit K.</span>
+          </div>
+          <span style="font-family:var(--font-mono);color:var(--purple);font-size:14px">87 WPM</span>
+        </div>
+        <div class="race-bar"><div class="race-fill p2" id="p2Bar" style="width:45%"></div></div>
+      </div>
+      <div class="player-race">
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <div class="avatar" style="background:linear-gradient(135deg,var(--gold),#f97316);color:#000;width:32px;height:32px;font-size:13px">PS</div>
+            <span style="font-weight:700;font-size:14px">Priya S.</span>
+          </div>
+          <span style="font-family:var(--font-mono);color:var(--gold);font-size:14px">112 WPM</span>
+        </div>
+        <div class="race-bar"><div class="race-fill p3" id="p3Bar" style="width:60%"></div></div>
+      </div>
+      <div class="player-race">
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <div class="avatar" style="background:linear-gradient(135deg,var(--danger),#ff8c42);color:#fff;width:32px;height:32px;font-size:13px">VR</div>
+            <span style="font-weight:700;font-size:14px">Vikram R.</span>
+          </div>
+          <span style="font-family:var(--font-mono);color:var(--danger);font-size:14px">76 WPM</span>
+        </div>
+        <div class="race-bar"><div class="race-fill p4" id="p4Bar" style="width:38%"></div></div>
+      </div>
+    </div>
+
+    <!-- Typing Text -->
+    <div class="typing-text-box mb-3" id="typingTextBox" onclick="document.getElementById('arenaInput').focus()">
+      <div id="typingDisplay"></div>
+    </div>
+
+    <!-- Input -->
+    <input type="text" class="arena-input" id="arenaInput" placeholder="Click here and start typing..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+
+    <div class="text-center mt-3" style="color:var(--muted);font-size:13px">
+      <i class="fas fa-keyboard me-2"></i>Type the text above as fast and accurately as possible
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 4: RESULTS -->
+<!-- ============================================================ -->
+<div class="screen" id="screen-results" style="background:var(--bg2)">
+  <div class="container py-5">
+    <div class="text-center mb-4">
+      <div style="font-family:var(--font-head);font-size:14px;color:var(--muted);letter-spacing:3px;margin-bottom:8px">CONTEST ENDED</div>
+      <div style="font-family:var(--font-head);font-size:32px;color:var(--text)">Final <span style="color:var(--accent)">Results</span></div>
+    </div>
+
+    <!-- Winner Podium -->
+    <div class="row justify-content-center g-3 mb-5">
+      <!-- 2nd -->
+      <div class="col-md-3 col-sm-4" style="margin-top:30px">
+        <div class="result-card">
+          <div class="rank-badge rank-2">2</div>
+          <div class="avatar mx-auto mb-2" style="background:linear-gradient(135deg,var(--gold),#f97316);color:#000;width:50px;height:50px;font-size:18px">PS</div>
+          <div style="font-weight:700;margin-bottom:4px">Priya S.</div>
+          <div style="font-family:var(--font-mono);color:var(--accent2);font-size:18px">112 WPM</div>
+          <div style="color:var(--muted);font-size:13px">98% acc</div>
+          <div style="color:var(--gold);font-family:var(--font-head);font-size:20px;margin-top:8px">+₹60</div>
+        </div>
+      </div>
+      <!-- 1st -->
+      <div class="col-md-3 col-sm-4">
+        <div class="result-card" style="border:2px solid var(--gold);position:relative">
+          <div style="position:absolute;top:-16px;left:50%;transform:translateX(-50%);font-size:28px">👑</div>
+          <div class="rank-badge rank-1" style="width:90px;height:90px;font-size:32px">1</div>
+          <div class="avatar mx-auto mb-2" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;width:56px;height:56px;font-size:20px">RK</div>
+          <div style="font-weight:700;font-size:18px;margin-bottom:4px">Rahul K.</div>
+          <div style="font-family:var(--font-mono);color:var(--accent);font-size:24px">142 WPM</div>
+          <div style="color:var(--muted);font-size:13px">99% acc</div>
+          <div class="prize-won mt-2">+₹100</div>
+        </div>
+      </div>
+      <!-- 3rd -->
+      <div class="col-md-3 col-sm-4" style="margin-top:50px">
+        <div class="result-card">
+          <div class="rank-badge rank-3">3</div>
+          <div class="avatar mx-auto mb-2" style="background:linear-gradient(135deg,var(--purple),#ec4899);color:#fff;width:50px;height:50px;font-size:18px">AK</div>
+          <div style="font-weight:700;margin-bottom:4px">Ankit K.</div>
+          <div style="font-family:var(--font-mono);color:var(--purple);font-size:18px">98 WPM</div>
+          <div style="color:var(--muted);font-size:13px">95% acc</div>
+          <div style="color:var(--gold);font-family:var(--font-head);font-size:20px;margin-top:8px">+₹30</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Your Result -->
+    <div class="bg-card border-tb br-14 p-4 mb-4 text-center" style="max-width:500px;margin:0 auto 24px">
+      <div style="color:var(--muted);font-size:13px;letter-spacing:2px;margin-bottom:16px">YOUR PERFORMANCE</div>
+      <div class="row g-3">
+        <div class="col-3"><div style="font-family:var(--font-head);font-size:28px;color:var(--accent)">142</div><div style="color:var(--muted);font-size:12px">WPM</div></div>
+        <div class="col-3"><div style="font-family:var(--font-head);font-size:28px;color:var(--accent2)">99%</div><div style="color:var(--muted);font-size:12px">Accuracy</div></div>
+        <div class="col-3"><div style="font-family:var(--font-head);font-size:28px;color:var(--gold)">#1</div><div style="color:var(--muted);font-size:12px">Rank</div></div>
+        <div class="col-3"><div style="font-family:var(--font-head);font-size:28px;color:var(--accent)">+₹100</div><div style="color:var(--muted);font-size:12px">Won</div></div>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <button class="hero-cta" onclick="showScreen('lobby')"><i class="fas fa-redo me-2"></i>Play Again</button>
+      <button class="hero-cta2" onclick="showScreen('wallet')"><i class="fas fa-wallet me-2"></i>Withdraw Winnings</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 5: LEADERBOARD -->
+<!-- ============================================================ -->
+<div class="screen" id="screen-leaderboard">
+  <div class="container py-4">
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <button onclick="showScreen('home')" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;cursor:pointer"><i class="fas fa-arrow-left"></i></button>
+      <div class="section-title">🏆 <span>Leaderboard</span></div>
+    </div>
+
+    <div class="tab-nav mb-4">
+      <button class="tab-btn active" onclick="setTab(this)">Daily</button>
+      <button class="tab-btn" onclick="setTab(this)">Weekly</button>
+      <button class="tab-btn" onclick="setTab(this)">All Time</button>
+    </div>
+
+    <!-- Top 3 -->
+    <div class="row g-3 mb-4">
+      <div class="col-4 text-center">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px">
+          <div style="font-size:28px">🥈</div>
+          <div class="avatar mx-auto my-2" style="background:linear-gradient(135deg,#9ca3af,#6b7280);color:#000;width:44px;height:44px;font-size:16px">PS</div>
+          <div style="font-weight:700;font-size:14px">Priya S.</div>
+          <div style="font-family:var(--font-mono);color:var(--accent2);font-size:16px">128 WPM</div>
+          <div style="color:var(--gold);font-weight:700;font-size:13px">₹1,240</div>
+        </div>
+      </div>
+      <div class="col-4 text-center" style="margin-top:-12px">
+        <div style="background:var(--card);border:2px solid var(--gold);border-radius:14px;padding:20px">
+          <div style="font-size:32px">🥇</div>
+          <div class="avatar mx-auto my-2" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;width:50px;height:50px;font-size:18px">RK</div>
+          <div style="font-weight:700;font-size:15px">Rahul K.</div>
+          <div style="font-family:var(--font-mono);color:var(--accent);font-size:18px">142 WPM</div>
+          <div style="color:var(--gold);font-weight:700;font-size:14px">₹3,450</div>
+        </div>
+      </div>
+      <div class="col-4 text-center">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px">
+          <div style="font-size:28px">🥉</div>
+          <div class="avatar mx-auto my-2" style="background:linear-gradient(135deg,#d97706,#92400e);color:#fff;width:44px;height:44px;font-size:16px">AK</div>
+          <div style="font-weight:700;font-size:14px">Ankit K.</div>
+          <div style="font-family:var(--font-mono);color:var(--purple);font-size:16px">119 WPM</div>
+          <div style="color:var(--gold);font-weight:700;font-size:13px">₹980</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full List -->
+    <div id="lbList">
+      <div class="lb-row">
+        <div class="lb-rank gold">1</div>
+        <div class="avatar" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;font-size:14px">RK</div>
+        <div style="flex:1"><div style="font-weight:700">Rahul Kumar</div><div style="color:var(--muted);font-size:12px">Mumbai</div></div>
+        <div class="text-end"><div class="lb-wpm">142 WPM</div><div style="color:var(--gold);font-size:13px;font-weight:700">₹3,450</div></div>
+      </div>
+      <div class="lb-row">
+        <div class="lb-rank silver">2</div>
+        <div class="avatar" style="background:linear-gradient(135deg,var(--gold),#f97316);color:#000;font-size:14px">PS</div>
+        <div style="flex:1"><div style="font-weight:700">Priya Sharma</div><div style="color:var(--muted);font-size:12px">Delhi</div></div>
+        <div class="text-end"><div class="lb-wpm">128 WPM</div><div style="color:var(--gold);font-size:13px;font-weight:700">₹1,240</div></div>
+      </div>
+      <div class="lb-row">
+        <div class="lb-rank bronze">3</div>
+        <div class="avatar" style="background:linear-gradient(135deg,var(--purple),#ec4899);color:#fff;font-size:14px">AK</div>
+        <div style="flex:1"><div style="font-weight:700">Ankit Khanna</div><div style="color:var(--muted);font-size:12px">Pune</div></div>
+        <div class="text-end"><div class="lb-wpm">119 WPM</div><div style="color:var(--gold);font-size:13px;font-weight:700">₹980</div></div>
+      </div>
+      <div class="lb-row">
+        <div class="lb-rank" style="color:var(--muted)">4</div>
+        <div class="avatar" style="background:linear-gradient(135deg,var(--danger),#ff8c42);color:#fff;font-size:14px">VR</div>
+        <div style="flex:1"><div style="font-weight:700">Vikram Rao</div><div style="color:var(--muted);font-size:12px">Bangalore</div></div>
+        <div class="text-end"><div class="lb-wpm">115 WPM</div><div style="color:var(--gold);font-size:13px;font-weight:700">₹720</div></div>
+      </div>
+      <div class="lb-row" style="border:2px solid var(--accent)">
+        <div class="lb-rank" style="color:var(--accent)">12</div>
+        <div class="avatar" style="background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;font-size:14px">ME</div>
+        <div style="flex:1"><div style="font-weight:700">You <span style="background:var(--accent);color:#000;padding:1px 6px;border-radius:8px;font-size:11px;margin-left:6px">YOU</span></div><div style="color:var(--muted);font-size:12px">Jaipur</div></div>
+        <div class="text-end"><div class="lb-wpm">89 WPM</div><div style="color:var(--gold);font-size:13px;font-weight:700">₹248</div></div>
+      </div>
+      <div class="lb-row">
+        <div class="lb-rank" style="color:var(--muted)">13</div>
+        <div class="avatar" style="background:var(--card2);color:var(--muted);font-size:14px">SM</div>
+        <div style="flex:1"><div style="font-weight:700">Sneha M.</div><div style="color:var(--muted);font-size:12px">Ahmedabad</div></div>
+        <div class="text-end"><div class="lb-wpm">85 WPM</div><div style="color:var(--gold);font-size:13px;font-weight:700">₹190</div></div>
+      </div>
+    </div>
+  </div>
+  <div style="height:80px"></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 6: WALLET -->
+<!-- ============================================================ -->
+<div class="screen" id="screen-wallet">
+  <div class="container py-4">
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <button onclick="showScreen('home')" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;cursor:pointer"><i class="fas fa-arrow-left"></i></button>
+      <div class="section-title">My <span>Wallet</span></div>
+    </div>
+
+    <div class="wallet-card mb-4">
+      <div style="color:var(--muted);font-size:13px;letter-spacing:2px;margin-bottom:8px">TOTAL BALANCE</div>
+      <div class="wallet-balance">₹248.50</div>
+      <div style="color:var(--muted);font-size:14px;margin-top:4px">Withdrawable: ₹198.50 | Bonus: ₹50</div>
+      <div class="d-flex gap-3 mt-4">
+        <button class="join-btn join-btn-green" style="max-width:160px" onclick="openAddMoneyModal()"><i class="fas fa-plus me-2"></i>Add Money</button>
+        <button style="background:transparent;border:1px solid var(--border);color:var(--text);padding:12px 24px;border-radius:8px;cursor:pointer;font-family:var(--font-body);font-weight:600" onclick="openWithdrawModal()"><i class="fas fa-download me-2"></i>Withdraw</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-num text-accent">₹1,450</div><div class="stat-label">Total Winnings</div></div></div>
+      <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-num" style="color:var(--danger)">₹800</div><div class="stat-label">Total Spent</div></div></div>
+      <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-num text-gold">₹650</div><div class="stat-label">Net Profit</div></div></div>
+      <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-num" style="color:var(--purple)">42</div><div class="stat-label">Contests Played</div></div></div>
+    </div>
+
+    <!-- Transactions -->
+    <div style="font-family:var(--font-head);font-size:16px;margin-bottom:16px">Transaction <span style="color:var(--accent)">History</span></div>
+    <div class="bg-card border-tb br-14 p-3">
+      <div class="txn-row">
+        <div><div style="font-weight:600">Contest Win — ₹10 entry</div><div style="color:var(--muted);font-size:13px">Today, 3:24 PM</div></div>
+        <div class="txn-amount credit">+₹100</div>
+      </div>
+      <div class="txn-row">
+        <div><div style="font-weight:600">Joined Contest — ₹10 entry</div><div style="color:var(--muted);font-size:13px">Today, 3:20 PM</div></div>
+        <div class="txn-amount debit">-₹10</div>
+      </div>
+      <div class="txn-row">
+        <div><div style="font-weight:600">Joined Contest — ₹5 entry</div><div style="color:var(--muted);font-size:13px">Today, 2:45 PM</div></div>
+        <div class="txn-amount debit">-₹5</div>
+      </div>
+      <div class="txn-row">
+        <div><div style="font-weight:600">Wallet Top-up via UPI</div><div style="color:var(--muted);font-size:13px">Yesterday, 10:00 AM</div></div>
+        <div class="txn-amount credit">+₹200</div>
+      </div>
+      <div class="txn-row">
+        <div><div style="font-weight:600">Contest Win — ₹25 entry</div><div style="color:var(--muted);font-size:13px">Yesterday, 4:12 PM</div></div>
+        <div class="txn-amount credit">+₹250</div>
+      </div>
+      <div class="txn-row" style="border:none">
+        <div><div style="font-weight:600">Withdrawal to UPI</div><div style="color:var(--muted);font-size:13px">2 days ago</div></div>
+        <div class="txn-amount debit">-₹500</div>
+      </div>
+    </div>
+  </div>
+  <div style="height:80px"></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 7: PROFILE -->
+<!-- ============================================================ -->
+<div class="screen" id="screen-profile">
+  <div class="container py-4">
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <button onclick="showScreen('home')" style="background:var(--card);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;cursor:pointer"><i class="fas fa-arrow-left"></i></button>
+      <div class="section-title">My <span>Profile</span></div>
+    </div>
+
+    <div class="bg-card border-tb br-14 p-4 mb-4 text-center">
+      <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-family:var(--font-head);font-size:28px;font-weight:700;color:#000">RK</div>
+      <div style="font-family:var(--font-head);font-size:22px;margin-bottom:4px">Rahul Kumar</div>
+      <div style="color:var(--muted);font-size:14px;margin-bottom:4px">rahul.k@gmail.com</div>
+      <div style="color:var(--muted);font-size:13px;margin-bottom:16px"><i class="fas fa-map-marker-alt me-1"></i>Jaipur, Rajasthan</div>
+      <div style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(0,245,160,0.1),rgba(0,217,245,0.1));border:1px solid var(--accent);padding:6px 16px;border-radius:20px">
+        <span style="color:var(--accent);font-weight:700;font-size:13px">⭐ Pro Player</span>
+      </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-6"><div class="stat-card"><div class="stat-num">89</div><div class="stat-label">Avg WPM</div></div></div>
+      <div class="col-6"><div class="stat-card"><div class="stat-num">96%</div><div class="stat-label">Avg Accuracy</div></div></div>
+      <div class="col-6"><div class="stat-card"><div class="stat-num">42</div><div class="stat-label">Contests</div></div></div>
+      <div class="col-6"><div class="stat-card"><div class="stat-num text-gold">18</div><div class="stat-label">Wins</div></div></div>
+    </div>
+
+    <!-- Achievements -->
+    <div style="font-family:var(--font-head);font-size:16px;margin-bottom:16px">Achievements</div>
+    <div class="row g-3 mb-4">
+      <div class="col-4 text-center">
+        <div class="bg-card border-tb br-10 p-3">
+          <div style="font-size:28px">⚡</div>
+          <div style="font-size:12px;font-weight:700;margin-top:6px">Speed King</div>
+          <div style="font-size:11px;color:var(--muted)">100+ WPM</div>
+        </div>
+      </div>
+      <div class="col-4 text-center">
+        <div class="bg-card border-tb br-10 p-3">
+          <div style="font-size:28px">🎯</div>
+          <div style="font-size:12px;font-weight:700;margin-top:6px">Sharpshooter</div>
+          <div style="font-size:11px;color:var(--muted)">99% Accuracy</div>
+        </div>
+      </div>
+      <div class="col-4 text-center">
+        <div class="bg-card border-tb br-10 p-3">
+          <div style="font-size:28px">🔥</div>
+          <div style="font-size:12px;font-weight:700;margin-top:6px">5 Win Streak</div>
+          <div style="font-size:11px;color:var(--muted)">Consecutive</div>
+        </div>
+      </div>
+    </div>
+
+    <button style="width:100%;padding:14px;background:transparent;border:1px solid var(--danger);border-radius:10px;color:var(--danger);font-family:var(--font-body);font-weight:700;font-size:15px;cursor:pointer" onclick="showScreen('auth')">
+      <i class="fas fa-sign-out-alt me-2"></i>Logout
+    </button>
+  </div>
+  <div style="height:80px"></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SCREEN 8: AUTH (Login/Register) -->
+<!-- ============================================================ -->
+<div class="screen" id="screen-auth" style="background:var(--bg2);display:flex;align-items:center;justify-content:center;padding:40px 0">
+  <div style="width:100%">
+    <div class="text-center mb-4">
+      <div class="nav-brand" style="font-size:28px;justify-content:center;display:flex;gap:0">TYPE<span style="color:var(--accent2)">BATTLE</span></div>
+      <div style="color:var(--muted);margin-top:8px;font-size:14px">Join 12,000+ players winning real money</div>
+    </div>
+    <div class="auth-card">
+      <div class="tab-nav mb-4">
+        <button class="tab-btn active" id="loginTab" onclick="switchAuth('login')">Login</button>
+        <button class="tab-btn" id="regTab" onclick="switchAuth('register')">Register</button>
+      </div>
+
+      <div id="loginForm">
+        <div class="mb-3"><input class="auth-input" type="tel" placeholder="Mobile Number" maxlength="10"></div>
+        <div class="mb-4"><input class="auth-input" type="password" placeholder="Password"></div>
+        <button class="auth-btn" onclick="showScreen('home')">Login</button>
+        <div class="divider">or</div>
+        <div class="row g-2">
+          <div class="col-6"><div class="social-btn" style="color:var(--text)"><img src="https://www.google.com/favicon.ico" width="18">Google</div></div>
+          <div class="col-6"><div class="social-btn" style="color:var(--text)"><i class="fab fa-facebook" style="color:#1877f2"></i>Facebook</div></div>
+        </div>
+      </div>
+
+      <div id="regForm" style="display:none">
+        <div class="mb-3"><input class="auth-input" type="text" placeholder="Full Name"></div>
+        <div class="mb-3"><input class="auth-input" type="tel" placeholder="Mobile Number" maxlength="10"></div>
+        <div class="mb-3"><input class="auth-input" type="email" placeholder="Email Address"></div>
+        <div class="mb-4"><input class="auth-input" type="password" placeholder="Create Password"></div>
+        <div class="mb-3 d-flex align-items-center gap-2" style="font-size:13px;color:var(--muted)">
+          <input type="checkbox" id="tos"> <label for="tos">I agree to Terms of Service and am 18+ years old</label>
+        </div>
+        <button class="auth-btn" onclick="showScreen('home')">Create Account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- JOIN CONTEST MODAL -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="joinModal">
+  <div class="modal-box">
+    <div class="modal-title" id="modalTitle">Join Contest</div>
+    <div class="d-flex justify-content-between mb-3 p-3" style="background:var(--bg2);border-radius:10px">
+      <div><div style="color:var(--muted);font-size:13px">Entry Fee</div><div id="modalFee" style="font-family:var(--font-head);font-size:26px;color:var(--accent)">₹10</div></div>
+      <div class="text-end"><div style="color:var(--muted);font-size:13px">Prize Pool</div><div id="modalPrize" style="font-family:var(--font-head);font-size:26px;color:var(--gold)">₹180</div></div>
+    </div>
+    <div class="mb-3" style="background:var(--bg2);border-radius:10px;padding:14px">
+      <div class="d-flex justify-content-between mb-2" style="font-size:14px"><span style="color:var(--muted)">Your Wallet Balance</span><span style="color:var(--accent);font-family:var(--font-mono)">₹248.50</span></div>
+      <div class="d-flex justify-content-between mb-2" style="font-size:14px"><span style="color:var(--muted)">Entry Fee</span><span id="modalFee2" style="font-family:var(--font-mono)">-₹10</span></div>
+      <div style="border-top:1px solid var(--border);margin:8px 0"></div>
+      <div class="d-flex justify-content-between" style="font-size:14px;font-weight:700"><span>After Joining</span><span id="modalAfter" style="font-family:var(--font-mono);color:var(--text)">₹238.50</span></div>
+    </div>
+    <div class="mb-3" style="background:rgba(0,245,160,0.05);border:1px solid rgba(0,245,160,0.2);border-radius:10px;padding:12px;font-size:13px;color:var(--muted)">
+      <i class="fas fa-info-circle me-2" style="color:var(--accent)"></i>Top 3 players by WPM win prizes. Contest starts when 10 players join.
+    </div>
+    <div class="d-flex gap-3">
+      <button style="flex:1;padding:12px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-family:var(--font-body);font-weight:600" onclick="closeModal()">Cancel</button>
+      <button style="flex:2;padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:8px;color:#000;font-family:var(--font-head);font-weight:700;cursor:pointer;font-size:16px" onclick="startCountdown()">Confirm & Join</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- ADD MONEY MODAL -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="addMoneyModal">
+  <div class="modal-box">
+    <div class="modal-title">Add Money to Wallet</div>
+    <div class="d-flex gap-2 flex-wrap mb-3">
+      <button onclick="setAmount(50)" style="flex:1;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-family:var(--font-mono);font-weight:700">₹50</button>
+      <button onclick="setAmount(100)" style="flex:1;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-family:var(--font-mono);font-weight:700">₹100</button>
+      <button onclick="setAmount(200)" style="flex:1;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-family:var(--font-mono);font-weight:700">₹200</button>
+      <button onclick="setAmount(500)" style="flex:1;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-family:var(--font-mono);font-weight:700">₹500</button>
+    </div>
+    <div class="mb-3"><input class="auth-input" id="amountInput" type="number" placeholder="Enter custom amount (min ₹10)" style="background:var(--bg2)"></div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:16px">Pay via:</div>
+    <div class="d-flex gap-2 mb-4 flex-wrap">
+      <div onclick="selectPay(this,'upi')" style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;cursor:pointer;font-size:13px;font-weight:600">📱 UPI</div>
+      <div onclick="selectPay(this,'card')" style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;cursor:pointer;font-size:13px;font-weight:600">💳 Card</div>
+      <div onclick="selectPay(this,'nb')" style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;cursor:pointer;font-size:13px;font-weight:600">🏦 Net Banking</div>
+    </div>
+    <div class="d-flex gap-3">
+      <button style="flex:1;padding:12px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-family:var(--font-body);font-weight:600" onclick="closeAddMoney()">Cancel</button>
+      <button style="flex:2;padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:8px;color:#000;font-family:var(--font-head);font-weight:700;cursor:pointer;font-size:15px" onclick="processPayment()">Pay via Razorpay</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- WITHDRAW MODAL -->
+<!-- ============================================================ -->
+<div class="modal-overlay" id="withdrawModal">
+  <div class="modal-box">
+    <div class="modal-title">Withdraw Money</div>
+    <div style="background:var(--bg2);border-radius:10px;padding:14px;margin-bottom:16px">
+      <div style="color:var(--muted);font-size:13px;margin-bottom:4px">Available to Withdraw</div>
+      <div style="font-family:var(--font-head);font-size:28px;color:var(--accent)">₹198.50</div>
+    </div>
+    <div class="mb-3"><input class="auth-input" type="number" placeholder="Enter amount to withdraw" style="background:var(--bg2)"></div>
+    <div class="mb-3"><input class="auth-input" type="text" placeholder="UPI ID (e.g. name@upi)" style="background:var(--bg2)"></div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px">⏱ Withdrawals processed within 24 hours. Min ₹50.</div>
+    <div class="d-flex gap-3">
+      <button style="flex:1;padding:12px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-family:var(--font-body);font-weight:600" onclick="closeWithdraw()">Cancel</button>
+      <button style="flex:2;padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:8px;color:#000;font-family:var(--font-head);font-weight:700;cursor:pointer;font-size:15px" onclick="closeWithdraw();showToast('success','Withdrawal request submitted!')">Request Withdrawal</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- COUNTDOWN OVERLAY -->
+<!-- ============================================================ -->
+<div class="countdown-screen" id="countdownScreen">
+  <div style="color:var(--muted);font-family:var(--font-head);font-size:16px;letter-spacing:3px">CONTEST STARTING IN</div>
+  <div class="countdown-num" id="countdownNum">3</div>
+  <div style="color:var(--muted);font-size:14px">Get your fingers ready!</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TOAST CONTAINER -->
+<!-- ============================================================ -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ============ SCREEN NAVIGATION ============
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const s = document.getElementById('screen-'+name);
+  if(s) s.classList.add('active');
+  window.scrollTo(0,0);
+  if(name === 'arena') initArena();
+}
+
+// ============ TABS ============
+function setTab(btn, val) {
+  btn.closest('.tab-nav').querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function switchAuth(mode) {
+  document.getElementById('loginForm').style.display = mode==='login'?'block':'none';
+  document.getElementById('regForm').style.display = mode==='register'?'block':'none';
+  document.getElementById('loginTab').className = 'tab-btn' + (mode==='login'?' active':'');
+  document.getElementById('regTab').className = 'tab-btn' + (mode==='register'?' active':'');
+}
+
+// ============ JOIN MODAL ============
+let currentFee = 10;
+function openJoinModal(fee, prize, type) {
+  currentFee = fee;
+  document.getElementById('modalTitle').textContent = `Join ${type} Contest`;
+  document.getElementById('modalFee').textContent = `₹${fee}`;
+  document.getElementById('modalPrize').textContent = `₹${prize}`;
+  document.getElementById('modalFee2').textContent = `-₹${fee}`;
+  document.getElementById('modalAfter').textContent = `₹${(248.50-fee).toFixed(2)}`;
+  document.getElementById('joinModal').classList.add('open');
+}
+function closeModal() { document.getElementById('joinModal').classList.remove('open'); }
+
+// ============ ADD MONEY MODAL ============
+function openAddMoneyModal() { document.getElementById('addMoneyModal').classList.add('open'); }
+function closeAddMoney() { document.getElementById('addMoneyModal').classList.remove('open'); }
+function setAmount(v) { document.getElementById('amountInput').value = v; }
+function selectPay(el, type) {
+  el.closest('.d-flex').querySelectorAll('div').forEach(d => { d.style.borderColor='var(--border)'; d.style.color='var(--text)'; });
+  el.style.borderColor='var(--accent)'; el.style.color='var(--accent)';
+}
+function processPayment() {
+  closeAddMoney();
+  showToast('success', 'Payment successful! Wallet updated.');
+}
+
+// ============ WITHDRAW MODAL ============
+function openWithdrawModal() { document.getElementById('withdrawModal').classList.add('open'); }
+function closeWithdraw() { document.getElementById('withdrawModal').classList.remove('open'); }
+
+// ============ COUNTDOWN ============
+function startCountdown() {
+  closeModal();
+  const el = document.getElementById('countdownScreen');
+  const numEl = document.getElementById('countdownNum');
+  el.classList.add('active');
+  let count = 3;
+  numEl.textContent = count;
+  const interval = setInterval(() => {
+    count--;
+    if(count <= 0) {
+      clearInterval(interval);
+      numEl.textContent = 'GO!';
+      setTimeout(() => {
+        el.classList.remove('active');
+        showScreen('arena');
+      }, 800);
+    } else {
+      numEl.style.animation = 'none';
+      numEl.offsetHeight;
+      numEl.style.animation = 'countPulse 1s ease';
+      numEl.textContent = count;
+    }
+  }, 1000);
+}
+
+// ============ TYPING ARENA ============
+const sampleText = "The quick brown fox jumps over the lazy dog. Practice makes perfect when it comes to typing. Speed and accuracy are both important to win contests.";
+let timerInterval, arenaTimer = 60, isTyping = false;
+let totalTyped = 0, errors = 0, startTime = null;
+
+function initArena() {
+  arenaTimer = 60;
+  isTyping = false;
+  totalTyped = 0; errors = 0; startTime = null;
+  clearInterval(timerInterval);
+  renderTypingText(0);
+  document.getElementById('arenaInput').value = '';
+  document.getElementById('arenaInput').disabled = false;
+  document.getElementById('wpmCount').textContent = '0';
+  document.getElementById('accCount').textContent = '100%';
+  document.getElementById('timerNum').textContent = '60';
+  document.getElementById('timerCircle').style.strokeDashoffset = '0';
+  document.getElementById('myBar').style.width = '0%';
+  document.getElementById('myWpm').textContent = '0 WPM';
+  simulateOtherPlayers();
+  setTimeout(() => document.getElementById('arenaInput').focus(), 100);
+}
+
+function renderTypingText(pos) {
+  const chars = sampleText.split('');
+  const typed = document.getElementById('arenaInput').value || '';
+  let html = '';
+  for(let i = 0; i < chars.length; i++) {
+    const c = chars[i] === ' ' ? '&nbsp;' : chars[i];
+    if(i < typed.length) {
+      if(typed[i] === chars[i]) html += `<span class="char-done">${c}</span>`;
+      else html += `<span class="char-error">${c}</span>`;
+    } else if(i === typed.length) {
+      html += `<span class="char-current">${c}</span>`;
+    } else {
+      html += `<span class="char-pending">${c}</span>`;
+    }
+  }
+  document.getElementById('typingDisplay').innerHTML = html;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const input = document.getElementById('arenaInput');
+  input.addEventListener('input', () => {
+    if(!isTyping) {
+      isTyping = true;
+      startTime = Date.now();
+      startArenaTimer();
+    }
+    const typed = input.value;
+    totalTyped = typed.length;
+    errors = 0;
+    for(let i = 0; i < typed.length; i++) {
+      if(typed[i] !== sampleText[i]) errors++;
+    }
+    renderTypingText(typed.length);
+    const elapsed = (Date.now() - startTime) / 60000;
+    const words = typed.trim().split(/\s+/).length;
+    const wpm = elapsed > 0 ? Math.round(words / elapsed) : 0;
+    const acc = totalTyped > 0 ? Math.round(((totalTyped - errors) / totalTyped) * 100) : 100;
+    document.getElementById('wpmCount').textContent = wpm;
+    document.getElementById('accCount').textContent = acc + '%';
+    document.getElementById('myWpm').textContent = wpm + ' WPM';
+    document.getElementById('myBar').style.width = Math.min((typed.length / sampleText.length) * 100, 100) + '%';
+    if(typed.length >= sampleText.length) finishArena();
+  });
+});
+
+function startArenaTimer() {
+  const total = 220;
+  timerInterval = setInterval(() => {
+    arenaTimer--;
+    document.getElementById('timerNum').textContent = arenaTimer;
+    const offset = total * (1 - arenaTimer/60);
+    document.getElementById('timerCircle').style.strokeDashoffset = offset;
+    if(arenaTimer <= 10) document.getElementById('timerCircle').style.stroke = 'var(--danger)';
+    if(arenaTimer <= 0) { clearInterval(timerInterval); finishArena(); }
+  }, 1000);
+}
+
+function finishArena() {
+  clearInterval(timerInterval);
+  document.getElementById('arenaInput').disabled = true;
+  setTimeout(() => showScreen('results'), 1500);
+}
+
+function simulateOtherPlayers() {
+  const bars = ['p2Bar','p3Bar','p4Bar'];
+  const speeds = [1.8, 2.5, 1.4];
+  bars.forEach((id, i) => {
+    document.getElementById(id).style.width = '0%';
+    let w = 0;
+    const iv = setInterval(() => {
+      w += speeds[i] * (0.5 + Math.random());
+      if(w > 100) { w = 100; clearInterval(iv); }
+      document.getElementById(id).style.width = w + '%';
+    }, 1000);
+  });
+}
+
+// ============ TOAST ============
+function showToast(type, msg) {
+  const icon = type === 'success' ? '✅' : '❌';
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span style="font-size:18px">${icon}</span><span style="font-weight:600">${msg}</span>`;
+  document.getElementById('toastContainer').appendChild(t);
+  setTimeout(() => { t.style.animation = 'slideInRight 0.3s ease reverse'; setTimeout(() => t.remove(), 300); }, 3000);
+}
+
+// Close modals on outside click
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if(e.target === m) m.classList.remove('open'); });
+});
+</script>
+</body>
+</html>
